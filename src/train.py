@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
+import mlflow
+import mlflow.sklearn
 import joblib
 
 from features import create_features
@@ -30,5 +32,17 @@ acc = accuracy_score(y_test, preds)
 print(f"Accuracy: {acc}")
 print(classification_report(y_test, preds))
 
+# MLflow 
+mlflow.start_run()
+
+mlflow.log_param("model", "LogisticRegression")
+mlflow.log_metric("accuracy", acc)
+
+mlflow.sklearn.log_model(model, "model")
+
+mlflow.end_run()
+
 # salvar modelo
 joblib.dump(model, "models/model.pkl")
+
+print("Modelo treinado e salvo com sucesso!")
