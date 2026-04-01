@@ -1,75 +1,112 @@
-# Credit Risk MLOps Pipeline
+# 🏦 Credit Risk MLOps Pipeline
 
-Projeto end-to-end de Machine Learning Engineering focado em risco de crédito, cobrindo desde o treinamento até deploy e monitoramento de modelo.
-
----
-
-## Objetivo
-
-Simular um pipeline completo de MLOps, incluindo:
-
-- Feature engineering
-- Treinamento de modelo
-- Deploy via API
-- Monitoramento básico
-- Boas práticas de produção
+> Pipeline end-to-end de Machine Learning Engineering para predição de risco de crédito — do treinamento ao deploy e monitoramento em produção.
 
 ---
 
-## Arquitetura
+## 📌 Visão Geral
 
-Dados → Feature Engineering → Treinamento → Modelo → API → Predição
+Este projeto simula um pipeline completo de **MLOps aplicado a crédito**, cobrindo todas as etapas de um ciclo de vida real de modelo em produção:
+
+| Etapa | Descrição |
+|---|---|
+| 🔧 Feature Engineering | Criação e transformação de variáveis preditivas |
+| 🤖 Treinamento | Modelagem com rastreamento de experimentos via MLflow |
+| 🚀 Deploy | Exposição do modelo via API REST com FastAPI |
+| 📊 Monitoramento | Acompanhamento básico de métricas em produção |
+| ✅ Boas Práticas | Consistência treino/inferência, versionamento e reprodutibilidade |
 
 ---
 
-## Estrutura do Projeto
+## 🏗️ Arquitetura
 
-mlops-credit-risk/
+```
+Dados Brutos
     │
-    ├── data/ # Dados brutos e geração de dataset
-    ├── src/ # Pipeline de treino e features
-    ├── api/ # API FastAPI para inferência
-    ├── models/ # Modelos treinados (não versionados no git)
-    ├── notebooks/ # Exploração (opcional)
+    ▼
+Feature Engineering  ──►  Consistência entre treino e inferência
+    │
+    ▼
+Treinamento do Modelo  ──►  MLflow (rastreamento de experimentos)
+    │
+    ▼
+Artefato do Modelo (.pkl)
+    │
+    ▼
+API FastAPI  ──►  POST /predict
+    │
+    ▼
+Predição de Risco de Crédito
+```
 
 ---
 
-## Tecnologias
+## 📁 Estrutura do Projeto
 
-- Python
-- scikit-learn
-- FastAPI
-- MLflow
-
----
-
-# Feature Engineering
-Criação de variáveis derivadas:
-
-- debt_to_income
-- is_young
-
-Garantindo consistência entre treino e inferência.
+```
+mlops-credit-risk/
+│
+├── data/               # Dados brutos e scripts de geração de dataset
+├── src/                # Pipeline de treino e feature engineering
+├── api/                # API FastAPI para inferência em tempo real
+├── models/             # Modelos treinados (não versionados no git)
+└── notebooks/          # Exploração e análise exploratória (EDA)
+```
 
 ---
 
-## Modelo
+## 🛠️ Tecnologias
 
-- Logistic Regression
-- Métricas avaliadas:
-  - Accuracy
-  - Precision
-  - Recall
-  - F1-score
-  - AUC
+| Ferramenta | Finalidade |
+|---|---|
+| **Python** | Linguagem principal |
+| **scikit-learn** | Modelagem e pré-processamento |
+| **FastAPI** | Serving do modelo via REST API |
+| **MLflow** | Rastreamento de experimentos e registro de modelos |
 
 ---
 
-## API (Inferência em tempo real)
+## ⚙️ Feature Engineering
 
-Endpoint:
+As seguintes variáveis derivadas são criadas e aplicadas de forma consistente tanto no treino quanto na inferência:
 
-    Exemplo de input:
+| Feature | Descrição |
+|---|---|
+| `debt_to_income` | Razão entre dívida e renda — indicador clássico de alavancagem |
+| `is_young` | Flag binária indicando clientes jovens (maior risco histórico) |
+
+> ⚠️ **Importante:** A mesma lógica de feature engineering é aplicada no pipeline de treino e na API, garantindo consistência e evitando *training-serving skew*.
+
+---
+
+## 🤖 Modelo
+
+- **Algoritmo:** Logistic Regression
+- **Framework:** scikit-learn
+
+### Métricas de Avaliação
+
+| Métrica | Descrição |
+|---|---|
+| Accuracy | Proporção de predições corretas |
+| Precision | Dos preditos como default, quantos realmente são |
+| Recall | Dos inadimplentes reais, quantos foram capturados |
+| F1-Score | Equilíbrio entre Precision e Recall |
+| AUC-ROC | Capacidade discriminativa geral do modelo |
+
+---
+
+## 🚀 API — Inferência em Tempo Real
+
+A API expõe um endpoint REST para predição individual de risco de crédito.
+
+### Endpoint
+
+```
+POST /predict
+```
+
+### Exemplo de Request
 
 ```json
 {
@@ -77,11 +114,78 @@ Endpoint:
   "debt": 2000,
   "age": 22
 }
+```
 
-Resposta :
+### Exemplo de Response
 
+```json
 {
   "default_risk": 0.99,
   "prediction": 1,
   "threshold": 0.5
 }
+```
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `default_risk` | float | Probabilidade estimada de inadimplência (0 a 1) |
+| `prediction` | int | Classificação binária: 1 = alto risco, 0 = baixo risco |
+| `threshold` | float | Limiar de decisão utilizado |
+
+---
+
+## 🚦 Como Executar
+
+### 1. Instalar dependências
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Treinar o modelo
+
+```bash
+python src/train.py
+```
+
+### 3. Subir a API
+
+```bash
+uvicorn api.main:app --reload
+```
+
+### 4. Fazer uma predição
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"income": 3000, "debt": 2000, "age": 22}'
+```
+
+---
+
+## 📈 MLflow — Rastreamento de Experimentos
+
+Com o MLflow ativo, é possível visualizar experimentos, métricas e artefatos:
+
+```bash
+mlflow ui
+```
+
+Acesse em: `http://localhost:5000`
+
+---
+
+## 🔮 Próximos Passos
+
+- [ ] Adicionar testes unitários e de integração
+- [ ] Containerizar com Docker
+- [ ] Implementar CI/CD com GitHub Actions
+- [ ] Adicionar monitoramento de data drift
+- [ ] Deploy em cloud (AWS / GCP / Azure)
+
+---
+
+## 📄 Licença
+
+Projeto para fins educacionais e de portfólio.
