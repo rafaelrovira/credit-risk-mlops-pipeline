@@ -339,19 +339,6 @@ Acesse em: `http://localhost:5000`
 
 ---
 
-## Próximos Passos
-
-- [x] Containerizar com Docker
-- [ ] Implementar CI/CD com GitHub Actions
-- [ ] Adicionar testes unitários e de integração
-- [ ] Adicionar monitoramento de data drift
-- [ ] Deploy em cloud (AWS / GCP / Azure)
-- [ ] Implementar modelo retraining automático
-- [ ] Adicionar autoscaling com Kubernetes
-- [ ] Implementar logging centralizado (ELK Stack)
-
----
-
 ## Troubleshooting
 
 ### API não sobe no Docker?
