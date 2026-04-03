@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+
+  mlflow:
+    image: python:3.11-slim
+    container_name: mlflow
+    working_dir: /mlflow
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    command: >
+      sh -c "pip install mlflow &&
+          mlflow ui --host 0.0.0.0 --port 5000 --allowed-hosts '*'"
+    ports:
+      - "5000:5000"
+
+  train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: train_pipeline
+    depends_on:
+      - mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: inference_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mlflow
+    environment:
+      - MODEL_URI=models:/credit-risk/Production
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
